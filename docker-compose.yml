@@ -1,15 +1,46 @@
-version: "3.8"
+version: '3.4'
 
-services: 
+services:
+  bancobari.servicehello:
+    image: ${DOCKER_REGISTRY-}bancobariservicehello
+    build:
+      context: .
+      dockerfile: BancoBari.ServiceHello/Dockerfile
+    depends_on:
+        - rabbitmq
+    networks:
+        - microservices-network
+  bancobari.servicehi:
+    image: ${DOCKER_REGISTRY-}bancobariservicehi    
+    build:
+      context: .
+      dockerfile: BancoBari.ServiceHi/Dockerfile    
+    depends_on:        
+        - rabbitmq
+        - bancobari.servicehello        
+    networks:
+        - microservices-network
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
+    hostname: rabbitmq
     ports: 
       - 5672:5672
       - 15672:15672
+    expose:
+      - 15672
+      - 5672
+    networks:
+        - microservices-network
     volumes: 
-      - rabbitmqdata:/var/lib/rabbitmq
-    hostname: rabbitmq
-
+      - rabbitmqdata:/var/lib/rabbitmq    
+    healthcheck:
+        test: rabbitmq-diagnostics -q ping
+        interval: 30s
+        timeout: 30s
+        retries: 3
+networks: 
+    microservices-network:
+        driver: bridge
 volumes: 
-  rabbitmqdata:
+    rabbitmqdata:

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BancoBari.ServiceHello": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
